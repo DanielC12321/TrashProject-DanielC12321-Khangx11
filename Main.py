@@ -1,33 +1,41 @@
-import tkinter as tk
+from tkinter import *
 from tkinter.constants import NW
 import requests
 from io import BytesIO
 from PIL import Image, ImageTk
 from deckmethods import deckmethod
-root = tk.Tk()
 
-
-
-
-a = deckmethod()
-
-canvas = tk.Canvas(root, bg ='green', height = 750, width = 1000)
-
-card = a.getcard(1)
-url = card[0][1]
-response = requests.get(url)
-img_data = response.content
-img = ImageTk.PhotoImage(Image.open(BytesIO(img_data)).resize((113, 157)))
-canvas.pack()
-canvas.create_image(15, 15, anchor = NW, image = img)
-def round():
-    pass
-gameover = False
-while gameover == False:
-    round
+class GUI:
     
+    def paintcards(self):
+        pass
+    def round(self):
+        self.playeronehand = a.getcard(playeronescore)
+        self.playertwohand = a.getcard(playertwoscore)
+        paintcards()
 
+    def display_coordinates(self, event):
+        print(f'x={event.x} y={event.y}')
 
+    def main_screen(self):
+        global screen
+        global canvas
+        screen = Tk()
+        global a
+        a = deckmethod()
+        canvas = Canvas(screen, bg ='green', height = 750, width = 1000)
+        global playeronehand
+        global playertwohand
+        global playeronescore
+        global playertwoscore
+        playeronehand = []
+        playertwohand = []
+        playeronescore = 10
+        playertwoscore = 10
+        canvas.bind('<Button-1>', self.display_coordinates)
+        canvas.pack()
+        round()
+        screen.mainloop()
 
-
-root.mainloop()
+a = GUI()
+a.main_screen()
