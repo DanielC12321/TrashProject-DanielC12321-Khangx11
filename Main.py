@@ -6,13 +6,6 @@ from PIL import Image, ImageTk
 from deckmethods import deckmethod
 
 class GUI:
-    
-    def paintcards(self):
-        pass
-    def round(self):
-        self.playeronehand = a.getcard(playeronescore)
-        self.playertwohand = a.getcard(playertwoscore)
-        paintcards()
 
     def display_coordinates(self, event):
         print(f'x={event.x} y={event.y}')
@@ -34,7 +27,18 @@ class GUI:
         playertwoscore = 10
         canvas.bind('<Button-1>', self.display_coordinates)
         canvas.pack()
-        round()
+        playeronehand = a.getcard(playeronescore)
+        response = requests.get(playeronehand[0][1]+"")
+        img_data = response.content
+        i = ImageTk.PhotoImage(Image.open(BytesIO(img_data)).resize((113, 157)))
+        spots = []
+        playeronehand = a.getcard(playeronescore)
+        playertwohand = a.getcard(playertwoscore)
+        x1pos = 100
+        y1pos = 50
+        index = 1
+        
+        print("passed")
         screen.mainloop()
 
 a = GUI()
