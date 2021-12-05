@@ -21,7 +21,7 @@ def loadimages(playeronehand):
         cardimg.append((i, card[0], False))
     return cardimg
 
-def paintCards(cards1, cards2, img):
+def paintCards(cards1, cards2, img, img2):
     x1pos = 40
     y1pos = 50
     x2pos = 40
@@ -30,6 +30,8 @@ def paintCards(cards1, cards2, img):
     index2 = 1
     global handimg
     handimg = canvas.create_image(655, 310, anchor = NW, image = handcard[0][0])
+    global discardimg
+    discardimg = canvas.create_image(840, 233, anchor = NW, image = img2)
     canvas.create_text(255, 15, font = "Times 20 bold", anchor = NW, text = "Player One")
     canvas.create_text(255, 425, font = "Times 20 bold", anchor = NW, text = "Player Two")
     global Turnthing
@@ -77,7 +79,6 @@ def clicked(event):
     y1bounds = 50
     checkinglist = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
     cardcounter = 0
-    print(handcard)
     for card in cards1:
         if checkinglist[cardcounter] in handcard[0][1]:
             if x1pos > x1bounds and y1pos > y1bounds and x1pos < x1bounds+113 and y1pos < y1bounds+157  and playeroneturn == True and cards1[cardcounter][2] == False:
@@ -92,8 +93,9 @@ def clicked(event):
         if cardcounter == 5:
             x1bounds = 40
             y1bounds = y1bounds + 130
+    if x1pos > 840 and y1pos > 233 and x1pos < 953 and y1pos < 390:
+        canvas.itemconfig(discardimg, image = handcard[0][0])
         
-    
     
 
 
@@ -115,6 +117,8 @@ global cards2
 global firsthand
 global handcard
 global playeroneturn
+global discard
+discard = []
 playeroneturn = True
 firsthand = a.getcard(1)
 playeronehand = a.getcard(playeronescore)
@@ -123,5 +127,6 @@ handcard = loadimages(firsthand)
 cards1 = loadimages(playeronehand)
 cards2 = loadimages(playertwohand)
 img = ImageTk.PhotoImage(Image.open("Backofcard.png").resize((113,157)))
-paintCards(cards1, cards2, img)
+img2 = ImageTk.PhotoImage(Image.open("discard.png").resize((113, 157)))
+paintCards(cards1, cards2, img, img2)
 screen.mainloop()
