@@ -28,14 +28,16 @@ def paintCards(cards1, cards2, img, img2):
     y2pos = 460
     index1 = 1
     index2 = 1
+    playeroneturn.append("True")
     global handimg
     handimg = canvas.create_image(655, 310, anchor = NW, image = handcard[0][0])
     global discardimg
+    discard.append((img2, "", False))
     discardimg = canvas.create_image(840, 233, anchor = NW, image = img2)
     canvas.create_text(255, 15, font = "Times 20 bold", anchor = NW, text = "Player One")
     canvas.create_text(255, 425, font = "Times 20 bold", anchor = NW, text = "Player Two")
     global Turnthing
-    Turnthing = canvas.create_text(130, 360, font = "Times 30 italic bold", anchor = NW, text = "Player One's Turn")
+    Turnthing = canvas.create_text(100, 360, font = "Times 30 italic bold", anchor = NW, text = "Player One's Turn")
     canvas.create_image(840, 400, anchor = NW, image = img)
     canvas.create_rectangle(840, 233, 953, 390)
     for card in cards1:
@@ -66,35 +68,97 @@ def roundover():
     if cards1complete == True or cards2complete == True:
         round = True
     return round
+def turnover():
+    if "True" in playeroneturn[0]:
+        playeroneturn[0] = "False"
+    elif "False" in playeroneturn[0]:
+        playeroneturn[0] = "True"
+    if "True" in playeroneturn[0]:
+        canvas.itemconfig(Turnthing, text = "Player One's Turn")
+    elif "False" in playeroneturn[0]:
+        canvas.itemconfig(Turnthing, text = "Player Two's Turn")
+    
+        
+
 
 def clicked(event):
     x1pos = event.x
     y1pos = event.y
-    if roundover == True:
-        if playeroneturn == True:
-            canvas.itemconfig(Turnthing, text = "New Round: Player One's Turn")
-        elif playeroneturn == False:
-            canvas.itemconfig(Turnthing, text = "New Round: Player Two's Turn")
     x1bounds = 40
     y1bounds = 50
     checkinglist = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
     cardcounter = 0
     for card in cards1:
-        if checkinglist[cardcounter] in handcard[0][1]:
-            if x1pos > x1bounds and y1pos > y1bounds and x1pos < x1bounds+113 and y1pos < y1bounds+157  and playeroneturn == True and cards1[cardcounter][2] == False:
+        if checkinglist[cardcounter] in handcard[0][1] or "J" in handcard[0][1]:
+            if x1pos > x1bounds and y1pos > y1bounds and x1pos < x1bounds+113 and y1pos < y1bounds+157  and "True" in playeroneturn[0] and cards1[cardcounter][2] == False:
                 temp = cards1[cardcounter]
                 cards1[cardcounter] = (handcard[0][0], handcard[0][1], True)
                 handcard[0] = (temp[0], temp[1], False)
                 canvas.itemconfig(handimg, image = handcard[0][0])
                 canvas.create_image(x1bounds, y1bounds, anchor = NW, image = cards1[cardcounter][0])
-                print("passed")
+            elif "J" in cards1[cardcounter][1] and x1pos > x1bounds and y1pos > y1bounds and x1pos < x1bounds+113 and y1pos < y1bounds+157  and "True" in playeroneturn[0]:
+                temp = cards1[cardcounter]
+                cards1[cardcounter] = (handcard[0][0], handcard[0][1], True)
+                handcard[0] = (temp[0], temp[1], False)
+                canvas.itemconfig(handimg, image = handcard[0][0])
+                canvas.create_image(x1bounds, y1bounds, anchor = NW, image = cards1[cardcounter][0])
         cardcounter = cardcounter + 1
         x1bounds = x1bounds + 115
         if cardcounter == 5:
             x1bounds = 40
             y1bounds = y1bounds + 130
-    if x1pos > 840 and y1pos > 233 and x1pos < 953 and y1pos < 390:
-        canvas.itemconfig(discardimg, image = handcard[0][0])
+    cardcounter = 0
+    x2bounds = 40
+    y2bounds = 460
+    for card in cards2:
+        if checkinglist[cardcounter] in handcard[0][1] or "J" in handcard[0][1]:
+            if x1pos > x2bounds and y1pos > y2bounds and x1pos < x2bounds+113 and y1pos < y2bounds+157  and "False" in playeroneturn[0] and cards2[cardcounter][2] == False:
+                temp = cards2[cardcounter]
+                cards2[cardcounter] = (handcard[0][0], handcard[0][1], True)
+                handcard[0] = (temp[0], temp[1], False)
+                canvas.itemconfig(handimg, image = handcard[0][0])
+                canvas.create_image(x2bounds, y2bounds, anchor = NW, image = cards2[cardcounter][0])
+            elif "J" in cards2[cardcounter][1] and x1pos > x2bounds and y1pos > y2bounds and x1pos < x2bounds+113 and y1pos < y2bounds+157  and "False" in playeroneturn[0]:
+                temp = cards2[cardcounter]
+                cards2[cardcounter] = (handcard[0][0], handcard[0][1], True)
+                handcard[0] = (temp[0], temp[1], False)
+                canvas.itemconfig(handimg, image = handcard[0][0])
+                canvas.create_image(x2bounds, y2bounds, anchor = NW, image = cards2[cardcounter][0])
+        cardcounter = cardcounter + 1
+        x2bounds = x2bounds + 115
+        if cardcounter == 5:
+            x2bounds = 40
+            y2bounds = y2bounds + 130
+    if x1pos > 840 and y1pos > 233 and x1pos < 953 and y1pos < 390 and handcard[0][2] == False:
+        discard.append(handcard[0])
+        canvas.itemconfig(discardimg, image = discard[-1][0])
+        handcard[0] = ((ImageTk.PhotoImage(Image.open("Empty.png").resize((113, 157))), "", True))
+        canvas.itemconfig(handimg, image = handcard[0][0])
+        turnover()
+    elif x1pos > 840 and y1pos > 233 and x1pos < 953 and y1pos < 390 and handcard[0][2] == True:
+        handcard[0] = discard[-1]
+        discard.pop()
+        canvas.itemconfig(handimg, image = handcard[0][0])
+        canvas.itemconfig(discardimg, image = discard[-1][0])
+    if x1pos > 840 and y1pos > 400 and x1pos < 952 and y1pos < 557 and handcard[0][2] == True:
+        drawn = a.getcard(1)
+        newimage = loadimages(drawn)
+        handcard[0] = newimage[0]
+        canvas.itemconfig(handimg, image = handcard[0][0])
+    roundcheck = roundover()
+    if roundcheck == True:
+        if "True" in playeroneturn[0]:
+            playeronescore[0] = playeronescore[0] - 1
+            temp1 = a.getcard(1)
+            handcard[0] = loadimages(temp1)[0]
+            temp2 = a.getcard(playeronescore[0])
+            
+            canvas.itemconfig(Turnthing, text = "New Round: Player One's Turn")
+        elif "False" in playeroneturn[0]:
+            canvas.itemconfig(Turnthing, text = "New Round: Player Two's Turn")
+
+        
+
         
     
 
@@ -107,8 +171,8 @@ global playeronescore
 global playertwoscore
 playeronehand = []
 playertwohand = []
-playeronescore = 10
-playertwoscore = 10
+playeronescore = [10]
+playertwoscore = [10]
 canvas.bind('<Button-1>', clicked)
 canvas.pack()
 global start
@@ -119,10 +183,10 @@ global handcard
 global playeroneturn
 global discard
 discard = []
-playeroneturn = True
+playeroneturn = []
 firsthand = a.getcard(1)
-playeronehand = a.getcard(playeronescore)
-playertwohand = a.getcard(playertwoscore)
+playeronehand = a.getcard(playeronescore[0])
+playertwohand = a.getcard(playertwoscore[0])
 handcard = loadimages(firsthand)
 cards1 = loadimages(playeronehand)
 cards2 = loadimages(playertwohand)
