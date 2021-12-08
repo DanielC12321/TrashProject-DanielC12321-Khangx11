@@ -82,7 +82,26 @@ def turnover():
     elif "False" in playeroneturn[0]:
         canvas.itemconfig(Turnthing, text = "Player Two's Turn")
     
-        
+def loadnewdeck():
+    a.getnew()
+    newp1 = a.getcard(playeronescore[0])
+    new1 = loadimages(newp1)
+    newp2 = a.getcard(playertwoscore[0])
+    new2 = loadimages(newp2)
+    newhand = a.getcard(1)
+    han = loadimages(newhand)
+    handcard[0] = han[0]
+    print(handcard[0])
+    print(cards1)
+    print(cards2)
+    for card in cards1:
+        cards1.pop()
+    for card in new1:
+        cards1.append(card)
+    for card in cards2:
+        cards2.pop()
+    for card in new2:
+        cards2.append(card)
 
 
 def clicked(event):
@@ -99,13 +118,13 @@ def clicked(event):
                 cards1[cardcounter] = (handcard[0][0], handcard[0][1], True)
                 handcard[0] = (temp[0], temp[1], False)
                 canvas.itemconfig(handimg, image = handcard[0][0])
-                canvas.create_image(x1bounds, y1bounds, anchor = NW, image = cards1[cardcounter][0])
+                canvas.itemconfig(images1[cardcounter], image = cards1[cardcounter][0])
             elif "J" in cards1[cardcounter][1] and x1pos > x1bounds and y1pos > y1bounds and x1pos < x1bounds+113 and y1pos < y1bounds+157  and "True" in playeroneturn[0]:
                 temp = cards1[cardcounter]
                 cards1[cardcounter] = (handcard[0][0], handcard[0][1], True)
                 handcard[0] = (temp[0], temp[1], False)
                 canvas.itemconfig(handimg, image = handcard[0][0])
-                canvas.create_image(x1bounds, y1bounds, anchor = NW, image = cards1[cardcounter][0])
+                canvas.itemconfig(images1[cardcounter], image = cards1[cardcounter][0])
         cardcounter = cardcounter + 1
         x1bounds = x1bounds + 115
         if cardcounter == 5:
@@ -121,13 +140,13 @@ def clicked(event):
                 cards2[cardcounter] = (handcard[0][0], handcard[0][1], True)
                 handcard[0] = (temp[0], temp[1], False)
                 canvas.itemconfig(handimg, image = handcard[0][0])
-                canvas.create_image(x2bounds, y2bounds, anchor = NW, image = cards2[cardcounter][0])
+                canvas.itemconfig(images2[cardcounter], image = cards2[cardcounter][0])
             elif "J" in cards2[cardcounter][1] and x1pos > x2bounds and y1pos > y2bounds and x1pos < x2bounds+113 and y1pos < y2bounds+157  and "False" in playeroneturn[0]:
                 temp = cards2[cardcounter]
                 cards2[cardcounter] = (handcard[0][0], handcard[0][1], True)
                 handcard[0] = (temp[0], temp[1], False)
                 canvas.itemconfig(handimg, image = handcard[0][0])
-                canvas.create_image(x2bounds, y2bounds, anchor = NW, image = cards2[cardcounter][0])
+                canvas.itemconfig(images2[cardcounter], image = cards2[cardcounter][0])
         cardcounter = cardcounter + 1
         x2bounds = x2bounds + 115
         if cardcounter == 5:
@@ -151,46 +170,29 @@ def clicked(event):
         canvas.itemconfig(handimg, image = handcard[0][0])
     roundcheck = roundover()
     if roundcheck == True:
-        a.getnew()
-        if "True" in playeroneturn[0]:
-            playeronescore[0] = playeronescore[0] - 1
-            temp1 = a.getcard(1)
-            handcard[0] = loadimages(temp1)[0]
-            canvas.itemconfig(handimg, image = handcard[0][0])
-            temp2 = a.getcard(playeronescore[0])
-            for card in cards1:
-                cards1.pop()
-            for card in temp2:
-                cards1.append(card)
-            temp3 = a.getcard(playertwoscore[0])
-            for card in cards2:
-                cards2.pop()
-            for card in temp3:
-                cards2.append(card)
-            img = ImageTk.PhotoImage(Image.open("Backofcard.png").resize((113,157)))
-            img2 = ImageTk.PhotoImage(Image.open("discard.png").resize((113, 157)))
-            canvas.itemconfig(Turnthing, text = "New Round: Player One's Turn")
-        elif "False" in playeroneturn[0]:
-            playeronescore[0] = playeronescore[0] - 1
-            temp1 = a.getcard(1)
-            handcard[0] = loadimages(temp1)[0]
-            temper = a.getcard(playeronescore[0])
-            temp2 = loadimages(temper)
-            for card in cards1:
-                cards1.pop()
-            for card in temp2:
-                cards1.append(card)
-            temper2 = a.getcard(playertwoscore[0])
-            temp3 = loadimages(temper2)
-            for card in cards2:
-                cards2.pop()
-            for card in temp3:
-                cards2.append(card)
-            img = ImageTk.PhotoImage(Image.open("Backofcard.png").resize((113,157)))
-            img2 = ImageTk.PhotoImage(Image.open("discard.png").resize((113, 157)))
-            canvas.delete("all")
-            paintCards(cards1, cards2, img, img2)
-            canvas.itemconfig(Turnthing, text = "New Round: Player Two's Turn")
+        loadnewdeck()
+        playeronescore[0] = playeronescore[0] - 1
+        counter = 0
+        for im in images1:
+            if counter <= playeronescore[0]-1:
+                canvas.itemconfig(images1[counter], image = img)
+            else:
+                canvas.itemconfig(images1[counter], image = img3)
+            counter = counter + 1
+        counter = 0
+        for im in images2:
+            if counter <= playertwoscore[0]-1:
+                canvas.itemconfig(images2[counter], image = img)
+            else:
+                canvas.itemconfig(images2[counter], image = img3)
+            counter = counter + 1
+        for dis in discard:
+            discard.pop()
+        discard.append((img2, "", False))
+        canvas.itemconfig(handimg, image = handcard[0][0])
+        canvas.itemconfig(discardimg, image = discard[0][0])
+        canvas.itemconfig(Turnthing, text = "New Round: Player One's Turn")
+        
 
         
 
@@ -217,6 +219,9 @@ global firsthand
 global handcard
 global playeroneturn
 global discard
+global img
+global img2
+global img3
 discard = []
 playeroneturn = []
 firsthand = a.getcard(1)
@@ -227,5 +232,6 @@ cards1 = loadimages(playeronehand)
 cards2 = loadimages(playertwohand)
 img = ImageTk.PhotoImage(Image.open("Backofcard.png").resize((113,157)))
 img2 = ImageTk.PhotoImage(Image.open("discard.png").resize((113, 157)))
+img3 = ImageTk.PhotoImage(Image.open("Empty.png").resize((113, 157)))
 paintCards(cards1, cards2, img, img2)
 screen.mainloop()
